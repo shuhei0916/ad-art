@@ -61,11 +61,14 @@ class TestRakutenClient:
             calls.append(params)
             return {"Items": [item()], "pageCount": 1}
 
-        client = RakutenClient(app_id="APP", affiliate_id="AFF", fetch=fake_fetch)
+        client = RakutenClient(
+            app_id="APP", access_key="pk_KEY", affiliate_id="AFF", fetch=fake_fetch
+        )
         tiles = client.search("コーヒー", max_pages=1)
 
         assert len(tiles) == 1
         assert calls[0]["applicationId"] == "APP"
+        assert calls[0]["accessKey"] == "pk_KEY"
         assert calls[0]["affiliateId"] == "AFF"
         assert calls[0]["keyword"] == "コーヒー"
         assert calls[0]["page"] == 1
@@ -75,7 +78,9 @@ class TestRakutenClient:
             code = f"shop:{params['page']}"
             return {"Items": [item(itemCode=code)], "pageCount": 3}
 
-        client = RakutenClient(app_id="APP", affiliate_id="AFF", fetch=fake_fetch)
+        client = RakutenClient(
+            app_id="APP", access_key="pk_KEY", affiliate_id="AFF", fetch=fake_fetch
+        )
         tiles = client.search("本", max_pages=3)
 
         assert [t.tile_id for t in tiles] == ["shop:1", "shop:2", "shop:3"]
@@ -84,7 +89,9 @@ class TestRakutenClient:
         def fake_fetch(params: dict) -> dict:
             return {"Items": [item(itemCode=f"shop:{params['page']}")], "pageCount": 2}
 
-        client = RakutenClient(app_id="APP", affiliate_id="AFF", fetch=fake_fetch)
+        client = RakutenClient(
+            app_id="APP", access_key="pk_KEY", affiliate_id="AFF", fetch=fake_fetch
+        )
         tiles = client.search("本", max_pages=10)
 
         assert len(tiles) == 2
@@ -93,7 +100,9 @@ class TestRakutenClient:
         def fake_fetch(params: dict) -> dict:
             return {"Items": [item(), item()], "pageCount": 1}
 
-        client = RakutenClient(app_id="APP", affiliate_id="AFF", fetch=fake_fetch)
+        client = RakutenClient(
+            app_id="APP", access_key="pk_KEY", affiliate_id="AFF", fetch=fake_fetch
+        )
         tiles = client.search("本", max_pages=1)
 
         assert len(tiles) == 1

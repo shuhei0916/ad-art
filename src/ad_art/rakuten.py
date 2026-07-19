@@ -13,12 +13,19 @@ from PIL import Image
 from ad_art.matcher import Tile
 from ad_art.quadtree import Region, average_color
 
-API_URL = "https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601"
+# 2026年2月のインフラ刷新後の新エンドポイント(旧 app.rakuten.co.jp は2026-05-14に停止)
+API_URL = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601"
+# Webアプリケーション型はReferer/Originが「許可されたWebサイト」と一致する必要がある
+REFERER = "https://shuhei0916.github.io/"
 
 
 def _http_fetch(params: dict) -> dict:
     query = urllib.parse.urlencode({**params, "format": "json"})
-    with urllib.request.urlopen(f"{API_URL}?{query}") as response:
+    request = urllib.request.Request(
+        f"{API_URL}?{query}",
+        headers={"Referer": REFERER, "Origin": REFERER.rstrip("/")},
+    )
+    with urllib.request.urlopen(request) as response:
         return json.load(response)
 
 
@@ -26,10 +33,12 @@ class RakutenClient:
     def __init__(
         self,
         app_id: str,
+        access_key: str,
         affiliate_id: str,
         fetch: Callable[[dict], dict] = _http_fetch,
     ):
         self._app_id = app_id
+        self._access_key = access_key
         self._affiliate_id = affiliate_id
         self._fetch = fetch
 
@@ -40,6 +49,7 @@ class RakutenClient:
             response = self._fetch(
                 {
                     "applicationId": self._app_id,
+                    "accessKey": self._access_key,
                     "affiliateId": self._affiliate_id,
                     "keyword": keyword,
                     "hits": 30,

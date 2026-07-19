@@ -34,7 +34,7 @@ def load_env(path: Path) -> dict[str, str]:
 
 
 def rate_limited_fetch(params: dict) -> dict:
-    time.sleep(1.0)  # 楽天ウェブサービスのQPS制限(1req/s)対策
+    time.sleep(1.5)  # 新APIは1.5秒未満の間隔だと429が返る
     return _http_fetch(params)
 
 
@@ -60,6 +60,7 @@ def main() -> None:
         env = load_env(Path(".env"))
         client = RakutenClient(
             app_id=env["RAKUTEN_APP_ID"],
+            access_key=env["RAKUTEN_ACCESS_KEY"],
             affiliate_id=env["RAKUTEN_AFFILIATE_ID"],
             fetch=rate_limited_fetch,
         )
