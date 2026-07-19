@@ -12,3 +12,5 @@ preview_*.png
 
 # 認証情報
 .env
+catalog.json
+mosaic.html
