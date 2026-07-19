@@ -9,3 +9,6 @@ preview_*.png
 
 # WSL/Windows
 *Zone.Identifier
+
+# 認証情報
+.env
